@@ -147,4 +147,4 @@ app.MapRegionEndpoints().RequireRateLimiting("api");
 // Health check
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow })).WithTags("Health");
 
-await app.RunAsync();
+app.Run();
