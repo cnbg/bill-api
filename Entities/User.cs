@@ -17,4 +17,6 @@ public class User
 
     public Guid? OrgId { get; set; }
     public Org? Org { get; set; }
+
+    public ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
 }

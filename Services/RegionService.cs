@@ -33,11 +33,11 @@ public class RegionService(AppDbCtx dbCtx) : IRegionService
         return region ?? throw new KeyNotFoundException("Region not found");
     }
 
-    public async Task<RegionResponse> CreateRegionAsync(CreateRegionRequest createRegionDto)
+    public async Task<RegionResponse> CreateRegionAsync(CreateRegionRequest request)
     {
         // Check for duplicate code
         var existingRegion = await dbCtx.Regions
-            .Where(r => r.Code == createRegionDto.Code)
+            .Where(r => r.Code == request.Code)
             .SingleOrDefaultAsync();
 
         if (existingRegion != null)
@@ -45,8 +45,8 @@ public class RegionService(AppDbCtx dbCtx) : IRegionService
 
         var resp = dbCtx.Regions.Add(new Region
         {
-            Code = createRegionDto.Code,
-            Name = createRegionDto.Name,
+            Code = request.Code,
+            Name = request.Name,
         });
         await dbCtx.SaveChangesAsync();
 
@@ -59,7 +59,7 @@ public class RegionService(AppDbCtx dbCtx) : IRegionService
             : throw new ArgumentException("Failed to create region");
     }
 
-    public async Task UpdateRegionAsync(Guid id, UpdateRegionRequest updateRegionDto)
+    public async Task UpdateRegionAsync(Guid id, UpdateRegionRequest request)
     {
         var region = await dbCtx.Regions
             .Where(r => r.Id == id)
@@ -69,18 +69,18 @@ public class RegionService(AppDbCtx dbCtx) : IRegionService
             throw new KeyNotFoundException("Region not found");
 
         // Check for duplicate code
-        if (!string.IsNullOrEmpty(updateRegionDto.Code))
+        if (!string.IsNullOrEmpty(request.Code))
         {
             var existingRegion = await dbCtx.Regions
-                .Where(r => r.Code == updateRegionDto.Code && r.Id != id)
+                .Where(r => r.Code == request.Code && r.Id != id)
                 .SingleOrDefaultAsync();
 
             if (existingRegion != null)
                 throw new ArgumentException("Region with the same code already exists");
         }
 
-        region.Code = updateRegionDto.Code ?? region.Code;
-        region.Name = updateRegionDto.Name ?? region.Name;
+        region.Code = request.Code ?? region.Code;
+        region.Name = request.Name ?? region.Name;
 
         await dbCtx.SaveChangesAsync();
     }

@@ -58,12 +58,17 @@ public class AuthService(
             .AsNoTracking()
             .FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId);
 
-        return user is not { IsActive: true } ? throw new ArgumentException("User not found") : BuildUserDto(user);
+        if (user is not { IsActive: true })
+            throw new ArgumentException("User not found");
+
+        return await BuildUserDto(user);
     }
 
-    public async Task UpdateAuthProfileAsync(UpdateProfileRequest request)
+    public async Task<TokenResponse> UpdateAuthProfileAsync(UpdateProfileRequest request)
     {
-        var user = await dbCtx.Users.FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId);
+        var user = await dbCtx.Users
+            .Include(u => u.Org)
+            .FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId);
 
         if (user is not { IsActive: true })
             throw new ArgumentException("User not found");
@@ -71,29 +76,29 @@ public class AuthService(
         user.Theme = request.Theme ?? user.Theme;
         user.Locale = request.Locale ?? user.Locale;
 
-        await dbCtx.SaveChangesAsync();
-    }
+        // check user can switch to the new org
+        if (request.OrgId != null && request.OrgId != user.OrgId)
+        {
+            var hasAccessToOrg = await dbCtx.UserRole
+                .Include(ur => ur.Org)
+                .AnyAsync(ur => ur.UserId == user.Id && ur.OrgId == request.OrgId && ur.Org.IsActive);
 
-    private static AuthUser BuildUserDto(User user)
-    {
-        return new AuthUser(
-            user.Id,
-            user.Email,
-            user.FirstName + " " + user.LastName,
-            user.OrgId,
-            user.Org?.Name,
-            user.Locale,
-            user.Theme
-        );
+            if (!hasAccessToOrg)
+                throw new ArgumentException("User does not have access to the specified organization");
+
+            user.OrgId = request.OrgId;
+        }
+
+        await dbCtx.SaveChangesAsync();
+
+        return await TokenResponse(user, true);
     }
 
     private async Task<TokenResponse> TokenResponse(User user, bool refreshExp = false)
     {
-        var authUser = BuildUserDto(user);
+        var authUser = await BuildUserDto(user);
 
-        var perms = new[] { "region-view", "region-create" };
-
-        var accessToken = jwtService.GenerateAccessToken(user, perms);
+        var accessToken = jwtService.GenerateAccessToken(authUser);
         var refreshToken = jwtService.GenerateRefreshToken();
 
         user.RefreshToken = refreshToken;
@@ -107,5 +112,72 @@ public class AuthService(
             refreshToken,
             authUser
         );
+    }
+
+    private async Task<AuthUser> BuildUserDto(User user)
+    {
+        var authUser = new AuthUser(
+            user.Id,
+            user.Email,
+            $"{user.FirstName} {user.LastName}".Trim(),
+            user.Type,
+            user.Locale,
+            user.Theme
+        );
+
+        var roles = await GetRoles(user);
+        authUser.Roles = roles.Select(r => r.Role.Name).ToList();
+
+        var orgs = await GetOrgs(user);
+        authUser.Orgs = orgs.Select(r => new AuthUserOrg(r.Org.Id, r.Org.Name)).ToList();
+
+        // set to user org_id
+        if (user.OrgId != null)
+        {
+            var org = authUser.Orgs?.FirstOrDefault(o => o.Id == user.OrgId);
+            if (org != null)
+                authUser.Org = org;
+        }
+
+        var perms = await GetRolePerms(roles.Select(r => r.RoleId).ToList());
+        authUser.Perms = perms.Select(p => p.Perm.Name).ToList();
+
+        return authUser;
+    }
+
+    private async Task<List<UserRole>> GetRoles(User user)
+    {
+        if (user.OrgId == null) return [];
+
+        return await dbCtx.UserRole
+            .Include(ur => ur.Role)
+            .Where(ur => ur.UserId == user.Id && ur.OrgId == user.OrgId && ur.Role.IsActive)
+            .Distinct()
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private async Task<List<UserRole>> GetOrgs(User user)
+    {
+        if (user.OrgId == null) return [];
+
+        return await dbCtx.UserRole
+            .Include(ur => ur.Org)
+            .Where(ur => ur.UserId == user.Id && ur.Org.IsActive)
+            .GroupBy(ur => ur.OrgId)
+            .Select(g => g.First())
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private async Task<List<RolePerm>> GetRolePerms(List<Guid> roleIds)
+    {
+        return await dbCtx.RolePerm
+            .Include(r => r.Perm)
+            .Where(rp => rp.Perm.IsActive && roleIds.Contains(rp.RoleId))
+            .GroupBy(rp => rp.PermId)
+            .Select(g => g.First())
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

@@ -24,13 +24,7 @@ public class UpdateProfileValidator : AbstractValidator<UpdateProfileRequest>
 {
     public UpdateProfileValidator()
     {
-        RuleFor(x => x.Locale)
-            .MaximumLength(10)
-            .Matches("^(ru|en)$")
-            ;
-        RuleFor(x => x.Theme)
-            .MaximumLength(20)
-            .Matches("^(light|dark)$")
-            ;
+        RuleFor(x => x.Locale).MaximumLength(10).Matches("^(ru|en)$");
+        RuleFor(x => x.Theme).MaximumLength(20).Matches("^(light|dark)$");
     }
 }

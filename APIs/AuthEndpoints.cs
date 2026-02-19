@@ -45,11 +45,7 @@ public static class AuthEndpoints
         group.MapPut("update", async (
                 IAuthService authService,
                 [FromBody] UpdateProfileRequest request
-            ) =>
-            {
-                await authService.UpdateAuthProfileAsync(request);
-                return Results.NoContent();
-            })
+            ) => await authService.UpdateAuthProfileAsync(request))
             .RequireAuthorization()
             .WithValidation<UpdateProfileRequest>()
             .WithName("UpdateAuthProfile");

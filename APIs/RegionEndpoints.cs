@@ -20,36 +20,35 @@ public static class RegionEndpoints
                 IRegionService regionService,
                 MyDataSourceLoadOptions loadOptions
             ) => await regionService.GetRegionListAsync(loadOptions))
-            // .RequireAuthorization("Authenticated")
+            .RequirePermission(Permissions.RegionView)
             .WithName("GetRegionList");
 
         group.MapGet("show/{id:guid}", async (
                 Guid id,
                 IRegionService regionService
             ) => await regionService.GetRegionByIdAsync(id))
-            // .RequireAuthorization("Authenticated")
             .RequirePermission(Permissions.RegionView)
             .WithName("GetRegionById");
 
         group.MapPost("create", async (
-                [FromBody] CreateRegionRequest createRegionDto,
-                IRegionService regionService
+                IRegionService regionService,
+                [FromBody] CreateRegionRequest createRegionDto
             ) => await regionService.CreateRegionAsync(createRegionDto))
-            // .RequireAuthorization("Authenticated")
+            .RequirePermission(Permissions.RegionCreate)
             .WithValidation<CreateRegionRequest>()
             .WithName("CreateRegion");
 
         // Update and Delete endpoints can be added similarly
         group.MapPut("update/{id:guid}", async (
                 Guid id,
-                [FromBody] UpdateRegionRequest updateRegionDto,
-                IRegionService regionService
+                IRegionService regionService,
+                [FromBody] UpdateRegionRequest updateRegionDto
             ) =>
             {
                 await regionService.UpdateRegionAsync(id, updateRegionDto);
                 return Results.NoContent();
             })
-            // .RequireAuthorization("Authenticated")
+            .RequirePermission(Permissions.RegionEdit)
             .WithValidation<UpdateRegionRequest>()
             .WithName("UpdateRegion");
 
@@ -61,7 +60,7 @@ public static class RegionEndpoints
                 await regionService.DeleteRegionAsync(id);
                 return Results.NoContent();
             })
-            // .RequireAuthorization("Authenticated")
+            .RequirePermission(Permissions.RegionDelete)
             .WithName("DeleteRegion");
 
         return group;

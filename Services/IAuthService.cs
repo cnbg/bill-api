@@ -8,5 +8,5 @@ public interface IAuthService
     Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest request);
     Task RevokeTokenAsync();
     Task<AuthUser> GetAuthUserAsync();
-    Task UpdateAuthProfileAsync(UpdateProfileRequest request);
+    Task<TokenResponse> UpdateAuthProfileAsync(UpdateProfileRequest request);
 }

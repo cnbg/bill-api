@@ -12,6 +12,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -111,7 +112,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddProblemDetails();
 
 // Add response compression
-builder.Services.AddResponseCompression(options => { options.EnableForHttps = true; });
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
+});
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
@@ -120,6 +125,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
+builder.Services.AddScoped<IOrgService, OrgService>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -135,6 +141,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
+app.UseResponseCompression();
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -143,8 +150,9 @@ app.UseStatusCodePages();
 
 app.MapAuthEndpoints().RequireRateLimiting("auth");
 app.MapRegionEndpoints().RequireRateLimiting("api");
+app.MapOrgEndpoints().RequireRateLimiting("api");
 
 // Health check
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow })).WithTags("Health");
 
-app.Run();
+await app.RunAsync();

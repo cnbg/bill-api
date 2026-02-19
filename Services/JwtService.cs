@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using billing.DTOs;
 using billing.Entities;
 using Microsoft.IdentityModel.Tokens;
 
@@ -9,7 +10,7 @@ namespace billing.Services;
 
 public class JwtService(IConfiguration conf) : IJwtService
 {
-    public string GenerateAccessToken(User user, IEnumerable<string>? perms = null)
+    public string GenerateAccessToken(AuthUser user)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(conf["Jwt:Key"]!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -17,13 +18,11 @@ public class JwtService(IConfiguration conf) : IJwtService
         var claims = new List<Claim>
         {
             new("usr", user.Id.ToString()),
-            new("org", user.OrgId.ToString() ?? ""),
+            new("org", user.Org?.Id.ToString() ?? ""),
             new("typ", user.Type),
-            // new("prm", "region-list"),
-            // new("prm", "region-view"),
         };
 
-        claims.AddRange(perms?.Select(p => new Claim("prm", p)) ?? []);
+        claims.AddRange(user.Perms.Select(perm => new Claim("prm", perm)));
 
         var token = new JwtSecurityToken(
             conf["Jwt:Issuer"],

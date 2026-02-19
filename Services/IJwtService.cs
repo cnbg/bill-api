@@ -1,9 +1,9 @@
-using billing.Entities;
+using billing.DTOs;
 
 namespace billing.Services;
 
 public interface IJwtService
 {
-    string GenerateAccessToken(User user, IEnumerable<string>? perms);
+    string GenerateAccessToken(AuthUser user);
     string GenerateRefreshToken(int length = 32);
 }
