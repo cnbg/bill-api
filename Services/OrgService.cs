@@ -62,10 +62,10 @@ public class OrgService(AppDbCtx dbCtx) : IOrgService
         await dbCtx.SaveChangesAsync();
     }
 
-    public async Task DeleteOrgAsync(Guid id)
+    public async Task DeleteOrgAsync(IEnumerable<Guid> ids)
     {
         var org = await dbCtx.Orgs
-            .Where(r => r.Id == id)
+            .Where(r => ids.Contains(r.Id))
             .FirstOrDefaultAsync();
 
         if (org == null)

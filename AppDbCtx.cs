@@ -12,6 +12,7 @@ public class AppDbCtx(DbContextOptions<AppDbCtx> options) : DbContext(options)
     public DbSet<RolePerm> RolePerm => Set<RolePerm>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserRole> UserRole => Set<UserRole>();
+    public DbSet<Payment> Payments => Set<Payment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

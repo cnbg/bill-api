@@ -126,6 +126,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<IOrgService, OrgService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -151,6 +152,7 @@ app.UseStatusCodePages();
 app.MapAuthEndpoints().RequireRateLimiting("auth");
 app.MapRegionEndpoints().RequireRateLimiting("api");
 app.MapOrgEndpoints().RequireRateLimiting("api");
+app.MapPaymentEndpoints().RequireRateLimiting("api");
 
 // Health check
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow })).WithTags("Health");
