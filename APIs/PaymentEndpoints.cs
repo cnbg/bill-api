@@ -51,12 +51,12 @@ public static class PaymentEndpoints
             .WithValidation<UpdatePaymentRequest>()
             .WithName("UpdatePayment");
 
-        group.MapDelete("delete", async (
+        group.MapDelete("delete/{id:guid}", async (
                 IPaymentService paymentService,
-                [FromBody] IEnumerable<Guid> ids
+                Guid id
             ) =>
             {
-                await paymentService.DeletePaymentAsync(ids);
+                await paymentService.DeletePaymentAsync(id);
                 return Results.NoContent();
             })
             .RequirePermission(Permissions.PaymentDelete)

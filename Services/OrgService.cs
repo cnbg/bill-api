@@ -62,17 +62,16 @@ public class OrgService(AppDbCtx dbCtx) : IOrgService
         await dbCtx.SaveChangesAsync();
     }
 
-    public async Task DeleteOrgAsync(IEnumerable<Guid> ids)
+    public async Task DeleteOrgAsync(Guid id)
     {
         var org = await dbCtx.Orgs
-            .Where(r => ids.Contains(r.Id))
+            .Where(r => r.Id == id)
             .FirstOrDefaultAsync();
 
         if (org == null)
             throw new KeyNotFoundException("Org not found");
 
         dbCtx.Orgs.Remove(org);
-
         await dbCtx.SaveChangesAsync();
     }
 }

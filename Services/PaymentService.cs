@@ -106,10 +106,16 @@ public class PaymentService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : 
         await dbCtx.SaveChangesAsync();
     }
 
-    public async Task DeletePaymentAsync(IEnumerable<Guid> ids)
+    public async Task DeletePaymentAsync(Guid id)
     {
-        await dbCtx.Payments
-            .Where(p => ids.Contains(p.Id))
-            .ExecuteDeleteAsync();
+        var payment = await dbCtx.Payments
+            .Where(p => p.Id == id && p.OrgId == _jwtDto.OrgId)
+            .FirstOrDefaultAsync();
+
+        if (payment == null)
+            throw new KeyNotFoundException("Payment not found");
+
+        dbCtx.Payments.Remove(payment);
+        await dbCtx.SaveChangesAsync();
     }
 }

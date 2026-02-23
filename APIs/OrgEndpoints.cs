@@ -51,12 +51,12 @@ public static class OrgEndpoints
             .WithValidation<UpdateOrgRequest>()
             .WithName("UpdateOrg");
 
-        group.MapDelete("delete", async (
+        group.MapDelete("delete/{id:guid}", async (
                 IOrgService orgService,
-                [FromBody] IEnumerable<Guid> ids
+                Guid id
             ) =>
             {
-                await orgService.DeleteOrgAsync(ids);
+                await orgService.DeleteOrgAsync(id);
                 return Results.NoContent();
             })
             .RequirePermission(Permissions.OrgDelete)

@@ -10,5 +10,5 @@ public interface IOrgService
     Task<OrgDto> GetOrgByIdAsync(Guid id);
     Task<OrgDto> CreateOrgAsync(CreateOrgRequest request);
     Task UpdateOrgAsync(Guid id, UpdateOrgRequest request);
-    Task DeleteOrgAsync(IEnumerable<Guid> ids);
+    Task DeleteOrgAsync(Guid id);
 }
