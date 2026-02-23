@@ -10,6 +10,18 @@ public static class Permissions
     public const string RegionEdit = "region.edit";
     public const string RegionDelete = "region.delete";
 
+    // District
+    public const string DistrictView = "district.view";
+    public const string DistrictCreate = "district.create";
+    public const string DistrictEdit = "district.edit";
+    public const string DistrictDelete = "district.delete";
+
+    // OrgType
+    public const string OrgTypeView = "org-type.view";
+    public const string OrgTypeCreate = "org-type.create";
+    public const string OrgTypeEdit = "org-type.edit";
+    public const string OrgTypeDelete = "org-type.delete";
+
     // Org
     public const string OrgView = "org.view";
     public const string OrgCreate = "org.create";
@@ -26,6 +38,12 @@ public static class Permissions
     [
         // Region
         RegionView, RegionCreate, RegionEdit, RegionDelete,
+
+        // District
+        DistrictView, DistrictCreate, DistrictEdit, DistrictDelete,
+
+        // OrgType
+        OrgTypeView, OrgTypeCreate, OrgTypeEdit, OrgTypeDelete,
 
         // Org
         OrgView, OrgCreate, OrgEdit, OrgDelete,

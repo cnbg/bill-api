@@ -125,6 +125,8 @@ builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRegionService, RegionService>();
+builder.Services.AddScoped<IDistrictService, DistrictService>();
+builder.Services.AddScoped<IOrgTypeService, OrgTypeService>();
 builder.Services.AddScoped<IOrgService, OrgService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
@@ -151,6 +153,8 @@ app.UseStatusCodePages();
 
 app.MapAuthEndpoints().RequireRateLimiting("auth");
 app.MapRegionEndpoints().RequireRateLimiting("api");
+app.MapDistrictEndpoints().RequireRateLimiting("api");
+app.MapOrgTypeEndpoints().RequireRateLimiting("api");
 app.MapOrgEndpoints().RequireRateLimiting("api");
 app.MapPaymentEndpoints().RequireRateLimiting("api");
 

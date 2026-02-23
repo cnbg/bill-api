@@ -6,6 +6,8 @@ namespace billing;
 public class AppDbCtx(DbContextOptions<AppDbCtx> options) : DbContext(options)
 {
     public DbSet<Region> Regions => Set<Region>();
+    public DbSet<District> Districts => Set<District>();
+    public DbSet<OrgType> OrgTypes => Set<OrgType>();
     public DbSet<Org> Orgs => Set<Org>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Perm> Perms => Set<Perm>();

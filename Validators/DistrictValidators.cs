@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace billing.Validators;
 
-public class CreateRegionValidator : AbstractValidator<CreateRegionRequest>
+public class CreateDistrictValidator : AbstractValidator<CreateDistrictRequest>
 {
-    public CreateRegionValidator(AppDbCtx db)
+    public CreateDistrictValidator(AppDbCtx db)
     {
         RuleFor(x => x.Code).NotEmpty().MaximumLength(100);
         RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
     }
 }
 
-public class UpdateRegionValidator : AbstractValidator<UpdateRegionRequest>
+public class UpdateDistrictValidator : AbstractValidator<UpdateDistrictRequest>
 {
-    public UpdateRegionValidator()
+    public UpdateDistrictValidator()
     {
         RuleFor(x => x.Code).MaximumLength(100);
         RuleFor(x => x.Name).MaximumLength(200);
