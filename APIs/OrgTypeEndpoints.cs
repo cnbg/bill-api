@@ -14,7 +14,7 @@ public static class OrgTypeEndpoints
     {
         var group = routes.MapGroup("v1/orgType")
             .WithExceptionHandler(new HttpExceptionFilter())
-            .WithTags("orgType");
+            .WithTags("org-type");
 
         group.MapGet("list", async (
                 IOrgTypeService orgTypeService,

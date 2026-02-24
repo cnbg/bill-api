@@ -10,16 +10,18 @@ public class AppDbCtx(DbContextOptions<AppDbCtx> options) : DbContext(options)
     public DbSet<OrgType> OrgTypes => Set<OrgType>();
     public DbSet<Org> Orgs => Set<Org>();
     public DbSet<Role> Roles => Set<Role>();
-    public DbSet<Perm> Perms => Set<Perm>();
-    public DbSet<RolePerm> RolePerm => Set<RolePerm>();
+    public DbSet<ClientType> ClientTypes => Set<ClientType>();
+    public DbSet<Client> Clients => Set<Client>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserRole> UserRole => Set<UserRole>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<Charge> Charges => Set<Charge>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<RolePerm>()
-            .HasKey(rp => new { rp.RoleId, rp.PermId });
+        modelBuilder.Entity<Role>()
+            .Property(r => r.Perms)
+            .HasColumnType("jsonb");
 
         modelBuilder.Entity<UserRole>()
             .HasKey(ur => new { ur.OrgId, ur.UserId, ur.RoleId });

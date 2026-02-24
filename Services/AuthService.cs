@@ -126,10 +126,10 @@ public class AuthService(
         );
 
         var roles = await GetRoles(user);
-        authUser.Roles = roles.Select(r => r.Role.Name).ToList();
+        authUser.Roles = roles.Select(ur => ur.Role.Name).ToList();
 
         var orgs = await GetOrgs(user);
-        authUser.Orgs = orgs.Select(r => new AuthUserOrg(r.Org.Id, r.Org.Name)).ToList();
+        authUser.Orgs = orgs.Select(ur => new AuthUserOrg(ur.Org.Id, ur.Org.Name)).ToList();
 
         // set to user org_id
         if (user.OrgId != null)
@@ -139,8 +139,7 @@ public class AuthService(
                 authUser.Org = org;
         }
 
-        var perms = await GetRolePerms(roles.Select(r => r.RoleId).ToList());
-        authUser.Perms = perms.Select(p => p.Perm.Name).ToList();
+        authUser.Perms = roles.SelectMany(ur => ur.Role.Perms).Distinct().ToList();
 
         return authUser;
     }
@@ -165,17 +164,6 @@ public class AuthService(
             .Include(ur => ur.Org)
             .Where(ur => ur.UserId == user.Id && ur.Org.IsActive)
             .GroupBy(ur => ur.OrgId)
-            .Select(g => g.First())
-            .AsNoTracking()
-            .ToListAsync();
-    }
-
-    private async Task<List<RolePerm>> GetRolePerms(List<Guid> roleIds)
-    {
-        return await dbCtx.RolePerm
-            .Include(r => r.Perm)
-            .Where(rp => rp.Perm.IsActive && roleIds.Contains(rp.RoleId))
-            .GroupBy(rp => rp.PermId)
             .Select(g => g.First())
             .AsNoTracking()
             .ToListAsync();

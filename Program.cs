@@ -115,7 +115,7 @@ builder.Services.AddProblemDetails();
 builder.Services.AddResponseCompression(options =>
 {
     options.EnableForHttps = true;
-    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/json" });
+    options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/json"]);
 });
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
@@ -128,7 +128,11 @@ builder.Services.AddScoped<IRegionService, RegionService>();
 builder.Services.AddScoped<IDistrictService, DistrictService>();
 builder.Services.AddScoped<IOrgTypeService, OrgTypeService>();
 builder.Services.AddScoped<IOrgService, OrgService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IClientTypeService, ClientTypeService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IChargeService, ChargeService>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -156,7 +160,12 @@ app.MapRegionEndpoints().RequireRateLimiting("api");
 app.MapDistrictEndpoints().RequireRateLimiting("api");
 app.MapOrgTypeEndpoints().RequireRateLimiting("api");
 app.MapOrgEndpoints().RequireRateLimiting("api");
+app.MapPermEndpoints().RequireRateLimiting("api");
+app.MapRoleEndpoints().RequireRateLimiting("api");
+app.MapClientTypeEndpoints().RequireRateLimiting("api");
+app.MapClientEndpoints().RequireRateLimiting("api");
 app.MapPaymentEndpoints().RequireRateLimiting("api");
+app.MapChargeEndpoints().RequireRateLimiting("api");
 
 // Health check
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow })).WithTags("Health");
