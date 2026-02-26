@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using billing;
 using billing.APIs;
-using billing.Constants;
 using billing.Helpers;
 using billing.Providers;
 using billing.Services;
@@ -28,7 +27,7 @@ builder.WebHost.UseKestrel(options =>
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
-    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    // options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
     options.SerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
 
@@ -133,6 +132,7 @@ builder.Services.AddScoped<IClientTypeService, ClientTypeService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IChargeService, ChargeService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 if (builder.Environment.IsDevelopment())
 {
@@ -166,6 +166,7 @@ app.MapClientTypeEndpoints().RequireRateLimiting("api");
 app.MapClientEndpoints().RequireRateLimiting("api");
 app.MapPaymentEndpoints().RequireRateLimiting("api");
 app.MapChargeEndpoints().RequireRateLimiting("api");
+app.MapUserEndpoints().RequireRateLimiting("api");
 
 // Health check
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow })).WithTags("Health");

@@ -12,20 +12,31 @@ public class ClientService(AppDbCtx dbCtx) : IClientService
     public async Task<LoadResult> GetClientListAsync(MyDataSourceLoadOptions loadOptions)
     {
         var query = dbCtx.Clients
+            .Include(c => c.ClientType)
             .AsNoTracking()
             .AsQueryable();
 
         return await DataSourceLoader.LoadAsync(query, loadOptions);
     }
 
-    public async Task<ClientResponse> GetClientByIdAsync(Guid id)
+    public async Task<ClientDto> GetClientByIdAsync(Guid id)
     {
         var client = await dbCtx.Clients
+            .Include(c => c.ClientType)
             .AsNoTracking()
-            .Where(r => r.Id == id)
-            .Select(r => new ClientResponse(
-                r.Id,
-                r.Account
+            .Where(c => c.Id == id)
+            .Select(c => new ClientDto(
+                c.Id,
+                c.Account,
+                c.ClientType.Name,
+                c.Entrance,
+                c.Floor,
+                c.HouseNum,
+                c.ApartNum,
+                c.Area,
+                c.MembersCount,
+                c.Address,
+                c.Note
             ))
             .FirstOrDefaultAsync();
 

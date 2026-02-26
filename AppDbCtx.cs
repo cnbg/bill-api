@@ -14,16 +14,26 @@ public class AppDbCtx(DbContextOptions<AppDbCtx> options) : DbContext(options)
     public DbSet<Client> Clients => Set<Client>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserRole> UserRole => Set<UserRole>();
+    public DbSet<UserClient> UserClients => Set<UserClient>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Charge> Charges => Set<Charge>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Role>()
+            .HasMany(r => r.UserRoles)
+            .WithOne(ur => ur.Role)
+            .HasForeignKey(ur => ur.RoleId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Role>()
             .Property(r => r.Perms)
             .HasColumnType("jsonb");
 
         modelBuilder.Entity<UserRole>()
             .HasKey(ur => new { ur.OrgId, ur.UserId, ur.RoleId });
+
+        modelBuilder.Entity<UserClient>()
+            .HasKey(uc => new { uc.OrgId, uc.UserId, uc.ClientId });
     }
 }

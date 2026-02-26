@@ -11,11 +11,13 @@ public record AuthUser(
 {
     public AuthUserOrg? Org { get; set; }
     public List<AuthUserOrg>? Orgs { get; set; }
-    public List<string> Roles { get; set; } = [];
+    public List<AuthUserRole> Roles { get; set; } = [];
     public List<string> Perms { get; set; } = [];
 }
 
 public record AuthUserOrg(Guid Id, string Name);
+
+public record AuthUserRole(Guid Id, string Name);
 
 public record LoginRequest(string Username, string Password);
 

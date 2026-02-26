@@ -58,6 +58,12 @@ public static class Permissions
     public const string ChargeEdit = "charge.edit";
     public const string ChargeDelete = "charge.delete";
 
+    // User
+    public const string UserView = "user.view";
+    public const string UserCreate = "user.create";
+    public const string UserEdit = "user.edit";
+    public const string UserDelete = "user.delete";
+
     public static List<string> GetList() =>
     [
         // Region
@@ -86,5 +92,8 @@ public static class Permissions
 
         // Charge
         ChargeView, ChargeCreate, ChargeEdit, ChargeDelete,
+
+        // User
+        UserView, UserCreate, UserEdit, UserDelete
     ];
 }

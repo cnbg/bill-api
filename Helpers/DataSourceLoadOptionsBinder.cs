@@ -6,14 +6,10 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 namespace billing.Helpers;
 
 [ModelBinder(BinderType = typeof(DataSourceLoadOptionsBinder))]
-public class DataSourceLoadOptions : DataSourceLoadOptionsBase
-{
-}
+public class DataSourceLoadOptions : DataSourceLoadOptionsBase {}
 
-public class DataSourceLoadOptionsBinder : IModelBinder
-{
-    public Task BindModelAsync(ModelBindingContext bindingContext)
-    {
+ public class DataSourceLoadOptionsBinder : IModelBinder {
+    public Task BindModelAsync(ModelBindingContext bindingContext) {
         var loadOptions = new DataSourceLoadOptions();
         loadOptions.StringToLower ??= true;
         DataSourceLoadOptionsParser.Parse(loadOptions, key => bindingContext.ValueProvider.GetValue(key).FirstOrDefault());
@@ -27,8 +23,9 @@ public class MyDataSourceLoadOptions : DataSourceLoadOptionsBase
     public static ValueTask<MyDataSourceLoadOptions> BindAsync(HttpContext httpContext)
     {
         var loadOptions = new MyDataSourceLoadOptions();
+        loadOptions.StringToLower ??= true;
         // Use DataSourceLoadOptionsParser to populate the loadOptions from the query string
-        DataSourceLoadOptionsParser.Parse(loadOptions, key => httpContext.Request.Query[key]);
+        DataSourceLoadOptionsParser.Parse(loadOptions, key => httpContext.Request.Query.TryGetValue(key, out var value) ? value.FirstOrDefault() : null);
         return ValueTask.FromResult(loadOptions);
     }
 }

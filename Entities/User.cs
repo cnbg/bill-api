@@ -19,4 +19,5 @@ public class User
     public Org? Org { get; set; }
 
     public ICollection<UserRole> UserRole { get; set; } = new List<UserRole>();
+    public ICollection<UserClient> UserClients { get; set; } = new List<UserClient>();
 }

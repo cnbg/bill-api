@@ -9,4 +9,6 @@ public class Role
 
     public Guid OrgId { get; set; }
     public Org Org { get; set; }
+
+    public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 }

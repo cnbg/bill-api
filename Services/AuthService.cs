@@ -40,7 +40,8 @@ public class AuthService(
 
     public async Task RevokeTokenAsync()
     {
-        var user = await dbCtx.Users.FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId);
+        var user = await dbCtx.Users
+            .FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId && u.OrgId == _jwtDto.OrgId);
 
         if (user is not { IsActive: true })
             throw new ArgumentException("User not found");
@@ -56,7 +57,7 @@ public class AuthService(
         var user = await dbCtx.Users
             .Include(u => u.Org)
             .AsNoTracking()
-            .FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId);
+            .FirstOrDefaultAsync(u => u.Id == _jwtDto.UserId && u.OrgId == _jwtDto.OrgId);
 
         if (user is not { IsActive: true })
             throw new ArgumentException("User not found");
@@ -125,41 +126,32 @@ public class AuthService(
             user.Theme
         );
 
-        var roles = await GetRoles(user);
-        authUser.Roles = roles.Select(ur => ur.Role.Name).ToList();
+        var userRoles = await GetRoles(user);
+        authUser.Roles = userRoles.Select(ur => new AuthUserRole(ur.Role.Id, ur.Role.Name)).ToList();
+        authUser.Perms = userRoles.SelectMany(ur => ur.Role.Perms).Distinct().ToList();
 
         var orgs = await GetOrgs(user);
         authUser.Orgs = orgs.Select(ur => new AuthUserOrg(ur.Org.Id, ur.Org.Name)).ToList();
 
-        // set to user org_id
-        if (user.OrgId != null)
-        {
-            var org = authUser.Orgs?.FirstOrDefault(o => o.Id == user.OrgId);
-            if (org != null)
-                authUser.Org = org;
-        }
-
-        authUser.Perms = roles.SelectMany(ur => ur.Role.Perms).Distinct().ToList();
+        if (user.OrgId == null) return authUser;
+        var org = authUser.Orgs?.FirstOrDefault(o => o.Id == user.OrgId);
+        if (org != null)
+            authUser.Org = org;
 
         return authUser;
     }
 
     private async Task<List<UserRole>> GetRoles(User user)
     {
-        if (user.OrgId == null) return [];
-
         return await dbCtx.UserRole
             .Include(ur => ur.Role)
             .Where(ur => ur.UserId == user.Id && ur.OrgId == user.OrgId && ur.Role.IsActive)
-            .Distinct()
             .AsNoTracking()
             .ToListAsync();
     }
 
     private async Task<List<UserRole>> GetOrgs(User user)
     {
-        if (user.OrgId == null) return [];
-
         return await dbCtx.UserRole
             .Include(ur => ur.Org)
             .Where(ur => ur.UserId == user.Id && ur.Org.IsActive)
