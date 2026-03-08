@@ -34,7 +34,7 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 // AddDbContext with connection resiliency and pool for better performance and reliability
 builder.Services.AddDbContextPool<AppDbCtx>(options =>
     options.UseNpgsql(
-            builder.Configuration.GetConnectionString("DefaultConnection"),
+            conf.GetConnectionString("DefaultConnection"),
             npgsqlOptions =>
             {
                 npgsqlOptions.EnableRetryOnFailure(
