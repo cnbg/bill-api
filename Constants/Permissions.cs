@@ -46,6 +46,12 @@ public static class Permissions
     public const string ClientEdit = "client.edit";
     public const string ClientDelete = "client.delete";
 
+    // Rate
+    public const string RateView = "rate.view";
+    public const string RateCreate = "rate.create";
+    public const string RateEdit = "rate.edit";
+    public const string RateDelete = "rate.delete";    
+
     // Payment
     public const string PaymentView = "payment.view";
     public const string PaymentCreate = "payment.create";

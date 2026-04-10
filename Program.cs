@@ -132,6 +132,7 @@ builder.Services.AddScoped<IClientTypeService, ClientTypeService>();
 builder.Services.AddScoped<IClientService, ClientService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IChargeService, ChargeService>();
+builder.Services.AddScoped<IRateService, RateService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 if (builder.Environment.IsDevelopment())
@@ -166,6 +167,7 @@ app.MapClientTypeEndpoints().RequireRateLimiting("api");
 app.MapClientEndpoints().RequireRateLimiting("api");
 app.MapPaymentEndpoints().RequireRateLimiting("api");
 app.MapChargeEndpoints().RequireRateLimiting("api");
+app.MapRateEndpoints().RequireRateLimiting("api");
 app.MapUserEndpoints().RequireRateLimiting("api");
 
 // Health check

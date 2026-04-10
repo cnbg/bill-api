@@ -17,6 +17,7 @@ public class AppDbCtx(DbContextOptions<AppDbCtx> options) : DbContext(options)
     public DbSet<UserClient> UserClients => Set<UserClient>();
     public DbSet<Payment> Payments => Set<Payment>();
     public DbSet<Charge> Charges => Set<Charge>();
+    public DbSet<Rate> Rates => Set<Rate>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

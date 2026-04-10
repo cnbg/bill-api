@@ -3,17 +3,17 @@ using FluentValidation;
 
 namespace billing.Validators;
 
-public class CreateOrgValidator : AbstractValidator<CreateOrgRequest>
+public class CreateRateValidator : AbstractValidator<CreateRateRequest>
 {
-    public CreateOrgValidator(AppDbCtx db)
+    public CreateRateValidator(AppDbCtx db)
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(200);
     }
 }
 
-public class UpdateOrgValidator : AbstractValidator<UpdateOrgRequest>
+public class UpdateRateValidator : AbstractValidator<UpdateRateRequest>
 {
-    public UpdateOrgValidator()
+    public UpdateRateValidator()
     {
         RuleFor(x => x.Name).MaximumLength(200);
     }
