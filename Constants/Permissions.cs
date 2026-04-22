@@ -50,7 +50,7 @@ public static class Permissions
     public const string RateView = "rate.view";
     public const string RateCreate = "rate.create";
     public const string RateEdit = "rate.edit";
-    public const string RateDelete = "rate.delete";    
+    public const string RateDelete = "rate.delete";
 
     // Payment
     public const string PaymentView = "payment.view";
@@ -63,6 +63,24 @@ public static class Permissions
     public const string ChargeCreate = "charge.create";
     public const string ChargeEdit = "charge.edit";
     public const string ChargeDelete = "charge.delete";
+
+    // Expense
+    public const string ExpenseView = "expense.view";
+    public const string ExpenseCreate = "expense.create";
+    public const string ExpenseEdit = "expense.edit";
+    public const string ExpenseDelete = "expense.delete";
+
+    // Balance
+    public const string BalanceView = "balance.view";
+    public const string BalanceCreate = "balance.create";
+    public const string BalanceEdit = "balance.edit";
+    public const string BalanceDelete = "balance.delete";
+
+    // Article
+    public const string ArticleView = "article.view";
+    public const string ArticleCreate = "article.create";
+    public const string ArticleEdit = "article.edit";
+    public const string ArticleDelete = "article.delete";
 
     // User
     public const string UserView = "user.view";
@@ -98,6 +116,15 @@ public static class Permissions
 
         // Charge
         ChargeView, ChargeCreate, ChargeEdit, ChargeDelete,
+
+        // Balance
+        BalanceView, BalanceCreate, BalanceEdit, BalanceDelete,
+
+        // Expense
+        ExpenseView, ExpenseCreate, ExpenseEdit, ExpenseDelete,
+
+        // Article
+        ArticleView, ArticleCreate, ArticleEdit, ArticleDelete,
 
         // User
         UserView, UserCreate, UserEdit, UserDelete

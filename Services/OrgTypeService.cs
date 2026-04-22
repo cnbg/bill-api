@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace billing.Services;
 
-public class OrgTypeService(AppDbCtx dbCtx) : IOrgTypeService
+public class OrgTypeService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : BaseAuthService(ctxAccessor), IOrgTypeService
 {
     public async Task<LoadResult> GetOrgTypeListAsync(MyDataSourceLoadOptions loadOptions)
     {
@@ -25,7 +25,8 @@ public class OrgTypeService(AppDbCtx dbCtx) : IOrgTypeService
             .Where(r => r.Id == id)
             .Select(r => new OrgTypeDto(
                 r.Id,
-                r.Name
+                r.Name,
+                r.IsActive
             ))
             .FirstOrDefaultAsync();
 
@@ -37,13 +38,15 @@ public class OrgTypeService(AppDbCtx dbCtx) : IOrgTypeService
         var resp = dbCtx.OrgTypes.Add(new OrgType
         {
             Name = request.Name,
+            IsActive = request.IsActive ?? false
         });
         await dbCtx.SaveChangesAsync();
 
         return resp.Entity != null
             ? new OrgTypeDto(
                 resp.Entity.Id,
-                resp.Entity.Name
+                resp.Entity.Name,
+                resp.Entity.IsActive
             )
             : throw new ArgumentException("Failed to create orgType");
     }
@@ -58,6 +61,7 @@ public class OrgTypeService(AppDbCtx dbCtx) : IOrgTypeService
             throw new KeyNotFoundException("OrgType not found");
 
         orgType.Name = request.Name ?? orgType.Name;
+        orgType.IsActive = request.IsActive ?? orgType.IsActive;
 
         await dbCtx.SaveChangesAsync();
     }

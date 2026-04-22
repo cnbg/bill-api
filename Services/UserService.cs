@@ -29,7 +29,8 @@ public class UserService(AppDbCtx dbCtx) : IUserService
             .Select(u => new UserDto(
                 u.Id,
                 u.OrgId,
-                u.Org == null ? null : new OrgDto(u.Org.Id, u.Org.Name),
+                u.Org == null ? null : new OrgDto(u.Org.Id, u.Org.OrgTypeId, u.Org.Name, u.Org.Inn,
+                    u.Org.Okpo, u.Org.Balance, u.Org.Note, u.Org.IsActive),
                 u.FirstName,
                 u.LastName,
                 u.Email,

@@ -8,14 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace billing.Services;
 
-public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRoleService
+public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : BaseAuthService(ctxAccessor), IRoleService
 {
-    private readonly JwtClaim _jwtDto = (ctxAccessor.HttpContext ?? throw new InvalidOperationException()).GetJwtClaims();
-
     public async Task<LoadResult> GetRoleListAsync(MyDataSourceLoadOptions loadOptions)
     {
         var query = dbCtx.Roles
-            .Where(r => r.OrgId == _jwtDto.OrgId)
+            .Where(r => r.OrgId == JwtDto.OrgId)
             .AsNoTracking()
             .AsQueryable();
 
@@ -25,13 +23,14 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
     public async Task<RoleDto> GetRoleByIdAsync(Guid id)
     {
         var role = await dbCtx.Roles
-            .Where(r => r.Id == id && r.OrgId == _jwtDto.OrgId)
+            .Where(r => r.Id == id && r.OrgId == JwtDto.OrgId)
             .Select(r => new RoleDto(
                 r.Id,
                 r.Name,
                 r.IsActive,
                 r.OrgId,
-                r.Perms
+                r.Perms,
+                r.Note
             ))
             .AsNoTracking()
             .FirstOrDefaultAsync();
@@ -43,9 +42,10 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
     {
         var resp = dbCtx.Roles.Add(new Role
         {
-            OrgId = _jwtDto.OrgId,
+            OrgId = JwtDto.OrgId,
             Name = request.Name,
-            IsActive = request.IsActive ?? false
+            IsActive = request.IsActive ?? false,
+            Note = request.Note
         });
 
         await dbCtx.SaveChangesAsync();
@@ -56,7 +56,8 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
                 resp.Entity.Name,
                 resp.Entity.IsActive,
                 resp.Entity.OrgId,
-                resp.Entity.Perms
+                resp.Entity.Perms,
+                resp.Entity.Note
             )
             : throw new ArgumentException("Failed to create role");
     }
@@ -64,7 +65,7 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
     public async Task UpdateRoleAsync(Guid id, UpdateRoleRequest request)
     {
         var role = await dbCtx.Roles
-            .Where(r => r.Id == id && r.OrgId == _jwtDto.OrgId)
+            .Where(r => r.Id == id && r.OrgId == JwtDto.OrgId)
             .FirstOrDefaultAsync();
 
         if (role == null)
@@ -72,6 +73,7 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
 
         role.IsActive = request.IsActive ?? role.IsActive;
         role.Name = request.Name ?? role.Name;
+        role.Note = request.Note ?? role.Note;
 
         await dbCtx.SaveChangesAsync();
     }
@@ -79,7 +81,7 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
     public async Task UpdateRolePermAsync(Guid id, UpdateRolePermRequest request)
     {
         var role = await dbCtx.Roles
-            .Where(r => r.Id == id && r.OrgId == _jwtDto.OrgId)
+            .Where(r => r.Id == id && r.OrgId == JwtDto.OrgId)
             .FirstOrDefaultAsync();
 
         if (role == null)
@@ -101,7 +103,7 @@ public class RoleService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : IRo
     public async Task DeleteRoleAsync(Guid id)
     {
         var role = await dbCtx.Roles
-            .Where(r => r.Id == id && r.OrgId == _jwtDto.OrgId)
+            .Where(r => r.Id == id && r.OrgId == JwtDto.OrgId)
             .FirstOrDefaultAsync();
 
         if (role == null)

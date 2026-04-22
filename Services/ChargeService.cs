@@ -43,6 +43,7 @@ public class ChargeService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : I
                 p.Id,
                 p.Account,
                 p.Amount,
+                p.Source,
                 p.Status,
                 p.Year,
                 p.Month,
@@ -62,6 +63,7 @@ public class ChargeService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : I
             OrgId = _jwtDto.OrgId,
             Account = request.Account,
             Amount = request.Amount,
+            Source = request.Source,
             Status = request.Status,
             Year = request.Year,
             Month = request.Month,
@@ -74,6 +76,7 @@ public class ChargeService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : I
                 resp.Entity.Id,
                 resp.Entity.Account,
                 resp.Entity.Amount,
+                resp.Entity.Source,
                 resp.Entity.Status,
                 resp.Entity.Year,
                 resp.Entity.Month,
@@ -94,6 +97,7 @@ public class ChargeService(AppDbCtx dbCtx, IHttpContextAccessor ctxAccessor) : I
 
         charge.Account = request.Account ?? charge.Account;
         charge.Amount = request.Amount ?? charge.Amount;
+        charge.Source = request.Source ?? charge.Source;
         charge.Status = request.Status ?? charge.Status;
         charge.Year = request.Year ?? charge.Year;
         charge.Month = request.Month ?? charge.Month;

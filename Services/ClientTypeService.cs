@@ -25,7 +25,8 @@ public class ClientTypeService(AppDbCtx dbCtx) : IClientTypeService
             .Where(r => r.Id == id)
             .Select(r => new ClientTypeDto(
                 r.Id,
-                r.Name
+                r.Name,
+                r.IsActive
             ))
             .FirstOrDefaultAsync();
 
@@ -37,13 +38,15 @@ public class ClientTypeService(AppDbCtx dbCtx) : IClientTypeService
         var resp = dbCtx.ClientTypes.Add(new ClientType
         {
             Name = request.Name,
+            IsActive = request.IsActive ?? false
         });
         await dbCtx.SaveChangesAsync();
 
         return resp.Entity != null
             ? new ClientTypeDto(
                 resp.Entity.Id,
-                resp.Entity.Name
+                resp.Entity.Name,
+                resp.Entity.IsActive
             )
             : throw new ArgumentException("Failed to create clientType");
     }
@@ -58,6 +61,7 @@ public class ClientTypeService(AppDbCtx dbCtx) : IClientTypeService
             throw new KeyNotFoundException("ClientType not found");
 
         clientType.Name = request.Name ?? clientType.Name;
+        clientType.IsActive = request.IsActive ?? clientType.IsActive;
 
         await dbCtx.SaveChangesAsync();
     }

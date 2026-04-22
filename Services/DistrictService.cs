@@ -22,10 +22,12 @@ public class DistrictService(AppDbCtx dbCtx) : IDistrictService
     public async Task<DistrictResponse> GetDistrictByIdAsync(Guid id)
     {
         var district = await dbCtx.Districts
+            .Include(d  => d.Region)
             .AsNoTracking()
             .Where(r => r.Id == id)
             .Select(r => new DistrictResponse(
                 r.Id,
+                r.RegionId,
                 r.Code,
                 r.Name
             ))
@@ -46,6 +48,7 @@ public class DistrictService(AppDbCtx dbCtx) : IDistrictService
 
         var resp = dbCtx.Districts.Add(new District
         {
+            RegionId = request.RegionId,
             Code = request.Code,
             Name = request.Name,
         });
@@ -54,6 +57,7 @@ public class DistrictService(AppDbCtx dbCtx) : IDistrictService
         return resp.Entity != null
             ? new DistrictResponse(
                 resp.Entity.Id,
+                resp.Entity.RegionId,
                 resp.Entity.Code,
                 resp.Entity.Name
             )
@@ -80,6 +84,7 @@ public class DistrictService(AppDbCtx dbCtx) : IDistrictService
                 throw new ArgumentException("District with the same code already exists");
         }
 
+        district.RegionId = request.RegionId ?? district.RegionId;
         district.Code = request.Code ?? district.Code;
         district.Name = request.Name ?? district.Name;
 
